@@ -1,9 +1,13 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 
+
+# spec 所在目录即项目根目录
+project_root = os.path.dirname(os.path.abspath(SPECPATH))
 
 a = Analysis(
-    ['xml_parser.py'],
-    pathex=[],
+    ['main_eou2.py'],
+    pathex=[project_root],
     binaries=[],
     datas=[],
     hiddenimports=[],

@@ -1,0 +1,9 @@
+# Memory Index
+## project — eo-translator-tools-conversion-rules
+本项目的控制字符与可读文本转换受严格校验，修改解析或回填逻辑时须保持这些约束：说话人控制字符只能从该游戏对应的角色名单中匹配；回填后单行超过 22 个字符会在校验中报错，需要译者手动插入 [[换行]]；换页等固定控制字符序列必须保持原顺序，不可随意增删简化。这些规则是汉化正确性的关键。
+## project — eo-translator-tools-architecture
+EO-translator-tools 采用共享界面、按游戏区分处理逻辑的架构：共享的 tkinter 界面通过 run_app 注入各游戏的处理函数与输入输出目录，EOU2 和 EO5 各有自己的处理器（控制字符与可读文本互转）和独立入口，打包成不同 exe。新增游戏版本时需沿用"写一套对应处理逻...
+## project — EO-translator-tools-control-chars
+EO 系列汉化工具的控制字符↔可读文本转换规则（readme.md 与 single_parser.py 声明，修改解析逻辑时必须遵守）：{f859}{xxxx}→[[speaker: 角色名]]（匹配主角团姓名，其余保留原格式）；{f804}→[[文字？起始]]；{f813}+4个hex→[[vo...
+## project — EO-translator-tools
+EO-translator-tools 是《世界树的迷宫》系列（EO5、新树2/EOU2）文本汉化辅助工具，仓库 github.com/TheSignPainter/EO-translator-tools。纯 Python + tkinter GUI，用 PyInstaller 打包为 Window...
