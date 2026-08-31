@@ -1,4 +1,8 @@
 # Memory Index
+## feedback — output-feedback
+按游戏注入处理逻辑：GUI 与格式解耦
+## project — style-convention
+EO-translator-tools 的表单视图 WrappedTableView（canvas+滚动区，每行由 3 个 tk.Text 单元格构成）在水平拉伸窗口宽度时出现过明显卡顿，根因是 Configure 事件风暴触发全量重排、且 _display_lines 对每个单元格用 count(...
 ## project — eo-translator-tools-conversion-rules
 本项目的控制字符与可读文本转换受严格校验，修改解析或回填逻辑时须保持这些约束：说话人控制字符只能从该游戏对应的角色名单中匹配；回填后单行超过 22 个字符会在校验中报错，需要译者手动插入 [[换行]]；换页等固定控制字符序列必须保持原顺序，不可随意增删简化。这些规则是汉化正确性的关键。
 ## project — eo-translator-tools-architecture
