@@ -32,8 +32,9 @@ PARSER_MODULES = {
     'EOU2': {'parser': 'EOU2.single_parser', 'checker': 'checker'},
 }
 
-COLUMNS = ('source', 'translation', 'target')
+COLUMNS = ('idx', 'source', 'translation', 'target')
 COLUMN_TITLES = {
+    'idx': '#',
     'source': 'source（转换后，只读）',
     'translation': 'translation（译文，可编辑）',
     'target': 'target（转换回，可编辑）',
@@ -83,6 +84,7 @@ def build_rows(xml_path, parse_fn):
         target_raw = tgt.text if tgt is not None and tgt.text is not None else ''
         rows.append({
             'entry_id': entry.attrib.get('id'),
+            'idx': entry.attrib.get('id'),
             'source_raw': source_raw,
             'source': parse_fn(source_raw),
             'translation': parse_fn(target_raw),
@@ -131,6 +133,17 @@ def replace_target_texts(raw_text, new_targets):
         last = block_m.end()
     parts.append(raw_text[last:])
     return ''.join(parts)
+
+
+def _display_path(path):
+    """返回用于展示的路径：若父路径中含有名为 MBM 的文件夹，则展示从 MBM/ 开始；
+    否则退化为仅展示文件名。"""
+    p = Path(path).resolve()
+    try:
+        idx = p.parts.index('MBM')
+    except ValueError:
+        return Path(path).name
+    return str(Path(*p.parts[idx:]))
 
 
 def _replace_block_target(block, new_text):
@@ -387,7 +400,7 @@ class TranslatorApp:
         ttk.Button(bar, text='保存', command=self.on_save).pack(side='left', padx=4)
 
     def _build_table(self):
-        self.table = WrappedTableView(self.root, COLUMNS, (58, 58, 78), COLUMN_TITLES)
+        self.table = WrappedTableView(self.root, COLUMNS, (10, 58, 58, 78), COLUMN_TITLES)
         self.table.on_cell_edit = self.open_editor
         self.table.on_row_select = self._show_row_status
 
@@ -408,7 +421,7 @@ class TranslatorApp:
         self.table.set_rows(rows)
         for i, row in enumerate(rows):
             self.table.set_invalid(i, bool(row['issues']))
-        self._refresh_status(f'已加载 {Path(path).name}')
+        self._refresh_status(f'已加载 {_display_path(path)}')
 
     def apply_edit(self, row_idx, field, value):
         """应用单元格编辑：translation 编辑后自动重算 target（单向联动）。"""
@@ -431,7 +444,7 @@ class TranslatorApp:
     def _refresh_status(self, detail=None):
         bad = sum(1 for r in self.rows if r['issues'])
         if self.file_path:
-            base = f'{Path(self.file_path).name}（{len(self.rows)} 条，{bad} 行有问题）'
+            base = f'{_display_path(self.file_path)}（{len(self.rows)} 条，{bad} 行有问题）'
         else:
             base = '未打开文件'
         if detail:
@@ -484,8 +497,8 @@ class TranslatorApp:
                 self._refresh_status(f'切换解析器失败：{exc}')
 
     def open_editor(self, row_idx, field):
-        if field == 'source':
-            self._refresh_status('source 列不可编辑')
+        if field in ('source', 'idx'):
+            self._refresh_status('source / # 列不可编辑')
             return
         row = self.rows[row_idx]
         win = tk.Toplevel(self.root)
